@@ -1,8 +1,12 @@
 from django.shortcuts import render
+from django.views.generic import TemplateView
 from django.views.generic.list import ListView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from studentorg.models import Organization
-from studentorg.forms import OrganizationForm
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from django.contrib import messages
+from studentorg.models import Organization, UserProfile
+from studentorg.forms import OrganizationForm, UserProfileForm
 from .models import OrgMember
 from .forms import OrgMemberForm
 from .models import Student
@@ -17,6 +21,22 @@ class HomePageView(ListView):
     model = Organization
     context_object_name = 'home'
     template_name = "home.html"
+
+class ProfileView(LoginRequiredMixin, FormView):
+    template_name = "profile.html"
+    form_class = UserProfileForm
+    success_url = reverse_lazy('profile')
+    login_url = '/accounts/login/'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = UserProfile.objects.get_or_create(user=self.request.user)[0]
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Profile updated successfully!')
+        return super().form_valid(form)
 
 class OrganizationList(ListView):
     model = Organization

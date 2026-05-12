@@ -18,7 +18,7 @@ PSUSphere is a Django-based web application for managing student organizations, 
 3. Open your browser and go to: http://localhost:8000
 
 
-## Running the App (For Clients)
+## Running the App (For Developers)
 
 1. Clone the repository: git clone <your-repo-url>
 
